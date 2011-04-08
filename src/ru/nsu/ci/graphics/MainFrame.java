@@ -9,7 +9,6 @@ public class MainFrame extends JFrame {
 	public MainFrame() throws HeadlessException {
 		setTitle("Rubiks Cube Interpreter");
 		setVisible(true);
-add();
 	}
 
 }

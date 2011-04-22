@@ -1,3 +1,176 @@
-/*
-Здесь помещаем свою грамматику!
-*/
+options
+{
+  STATIC = false;
+  VISITOR = true;
+  MULTI = true;
+  NODE_DEFAULT_VOID = true;
+}
+
+PARSER_BEGIN(CubeExecuter)
+	public class CubeExecuter
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException
+	{
+	  	private TCube cube;
+		public void Execute()
+		{
+		  cube = new TCube();
+		  start();
+		}
+	}
+PARSER_END(CubeExecuter)
+
+SKIP : {" "}
+TOKEN : { < VAR : "var" > }
+TOKEN : { < SELECT : "Select" > }
+TOKEN : { < ROLL : "Roll" > }
+TOKEN : { < DO : "do" > }
+TOKEN : { < RETURN : "return" > }
+TOKEN : { < TOP : "top" > }
+TOKEN : { < BOTTOM : "bottom" > }
+TOKEN : { < LEFT : "left" > }
+TOKEN : { < RIGHT : "right" > }
+TOKEN : { < BACK : "back" > }
+TOKEN : { < ROW_T : "row_t" > }
+TOKEN : { < ROW_M : "row_m" > }
+TOKEN : { < ROW_B : "row_b" > }
+TOKEN : { < COL_L : "col_l" > }
+TOKEN : { < COL_M : "col_m" > }
+TOKEN : { < COL_R : "col_r" > }
+TOKEN : { < BEGIN : "begin" > }
+TOKEN : { < END : "end" > }
+TOKEN :	{ < ASSIGN : "=" > }
+TOKEN : { < EOL : "\n" | "\r" | "\r\n" > }
+TOKEN :	{ < OPENPAR : "(" > }
+TOKEN : { < CLOSEPAR : ")" > }
+TOKEN : { < COMA : "," > }
+TOKEN : {
+  < NUMBER : <DIGIT>
+  	| <DIGIT> "." <DIGIT>
+  	|  <DIGIT> "."
+  	|  "." <DIGIT> >
+}
+TOKEN : { < #DIGIT : (["0"-"9"])+ > }
+TOKEN : { < ID : (["a"-"z","A"-"Z"])+ > } //id 
+void start()
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException : {}
+{
+  (
+    (
+  	  checkSelect()
+ 	  |
+ 	  checkRoll()
+ 	  |  
+  	  checkRandom()
+ 	  |
+ 	  checkReturn()
+	)
+	<EOL>
+  )+
+  <EOF>
+}
+void checkSelect() 
+		throws 	TokenMgrError,
+				ParseException :
+{
+  int side = 0;
+}
+{
+  <SELECT>
+  <OPENPAR>
+  (
+  	<TOP>
+  	|
+  	<BOTTOM>
+  	{ side = 1; }
+  	| 
+  	<LEFT>
+  	{ side = 2; }
+  	|
+  	<RIGHT>
+  	{ side = 3; }
+  	|
+  	<BACK>
+  	{ side = 4; }
+  ) 
+  <CLOSEPAR>
+  { cube.Select(side); }
+}
+void checkRoll() 
+		throws 	TokenMgrError,
+				ParseException :
+{
+  int stick = 0;
+  int dir = 0;
+}
+{
+  <ROLL>
+  <OPENPAR>
+  (
+    <ROW_T>
+  	|
+    <ROW_M>
+    { stick = 1; }
+  	| 
+    <ROW_B>
+    { stick = 2; }
+  	|
+    <COL_L>
+    { stick = 3; }
+  	|
+    <COL_M>
+    { stick = 4; }
+  	|
+    <COL_R>
+    { stick = 5; }
+  )
+  <COMA>
+  (
+  	<TOP>
+  	|
+  	<BOTTOM>
+    { dir = 1; }
+  	| 
+  	<LEFT>
+    { dir = 2; }
+  	|
+  	<RIGHT>
+    { dir = 3; }
+  	|
+  	<BACK>
+    { dir = 4; }
+  )
+  <CLOSEPAR>
+  { cube.Roll(stick, dir); }
+}
+void checkRandom() 
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException :
+{
+  Token t;
+}
+{
+  <RANDOM>
+  <OPENPAR>
+  t = <NUMBER>
+  <CLOSEPAR>
+  { cube.Random(Integer.parseInteger(t.image)); }
+}
+void checkReturn() 
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException :
+{
+  Token t;
+}
+{
+  <RETURN>
+  <OPENPAR>
+  t = <NUMBER>
+  <CLOSEPAR>
+  { cube.Return(Integer.parseInteger(i.image)); }  
+}

@@ -174,3 +174,5 @@ void checkReturn()
   <CLOSEPAR>
   { cube.Return(Integer.parseInteger(i.image)); }  
 }
+
+//der test

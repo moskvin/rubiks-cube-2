@@ -1,4 +1,4 @@
-package ru.nsu.ci.graphics;
+﻿package ru.nsu.ci.graphics;
 
 import java.awt.Color;
 import java.awt.GridBagConstraints;

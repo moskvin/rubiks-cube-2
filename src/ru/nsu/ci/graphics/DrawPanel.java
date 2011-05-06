@@ -1,4 +1,4 @@
-package ru.nsu.ci.graphics;
+﻿package ru.nsu.ci.graphics;
 
 import java.awt.Component;
 
@@ -41,51 +41,65 @@ public class DrawPanel extends JPanel implements GLEventListener, KeyListener {
 		gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
 		gl.glTranslatef(0.0f, 0.0f, -5.0f);
-
+				
+		class Kube
+		{
+			int[] left = new int[27]; //0x000000;
+			int right[];
+			int down[];
+			int up[];
+			int front[];
+			int back[];
+		}
+		
 		// rotate on the three axis
 		gl.glRotatef(rotateT, 1.0f, 0.0f, 0.0f);
 		gl.glRotatef(rotateT, 0.0f, 1.0f, 0.0f);
 		gl.glRotatef(rotateT, 0.0f, 0.0f, 1.0f);
-
 		// Draw A Quad
 		gl.glBegin(GL2.GL_QUADS);
-		
-		gl.glColor3f(0.0f, 1.0f, 1.0f); // set the color of the quad
-		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left
-		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Top Right
-		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Right
-		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left
-		
-		gl.glColor3f(1.0f, 1.0f, 1.0f);
-		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Left
-		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right
-		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right
-		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Left
-		
-		gl.glColor3f(1.0f, 0.3f, 0.1f);
-		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left
-		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right
-		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Bottom Right
-		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Bottom Left
-		
-		gl.glColor3f(0.2f, 0.0f, 0.8f);
-		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Top Left
-		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Top Right
-		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right
-		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left
-		
-		gl.glColor3f(0.8f, 1.0f, 0.4f);
-		gl.glVertex3f(-1.0f, -1.0f, -1.0f); // Top Left
-		gl.glVertex3f(-1.0f, -1.0f, 1.0f); // Top Right
-		gl.glVertex3f(1.0f, -1.0f, 1.0f); // Bottom Right
-		gl.glVertex3f(1.0f, -1.0f, -1.0f); // Bottom Left
-		
-		gl.glColor3f(0.9f, 0.5f, 0.2f);
-		gl.glVertex3f(-1.0f, 1.0f, -1.0f); // Top Left
-		gl.glVertex3f(-1.0f, 1.0f, 1.0f); // Top Right
-		gl.glVertex3f(1.0f, 1.0f, 1.0f); // Bottom Right
-		gl.glVertex3f(1.0f, 1.0f, -1.0f); // Bottom Left
-		
+		for(int i=-1;i<=1;i++)
+			for(int j=-1;j<=1;j++)
+				for(int k=-1;k<=1;k++)
+				{
+					//gl.glColor(Kube.front[n]); // set the color of the quad
+					gl.glColor3f(1.0f, 0.0f, 0.0f);
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					
+					//gl.glColor3f(r[n], g[n], b[n]);
+					gl.glColor3f(0.0f, 0.5f, 0.0f);
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Left
+					
+					gl.glColor3f(0.0f,0.0f,1.0f);
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					
+					gl.glColor3f(1.0f,1.0f,1.0f);
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					
+					gl.glColor3f(1.0f,1.0f,0.0f);
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					
+					gl.glColor3f(1.0f,0.5f,0.0f);
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+				}
 		// Done Drawing The Quad
 		gl.glEnd();
 

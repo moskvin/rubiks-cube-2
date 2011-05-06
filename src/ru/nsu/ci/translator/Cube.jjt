@@ -1,0 +1,206 @@
+options
+{
+  STATIC = false;
+  VISITOR = true;
+  MULTI = true;
+  NODE_DEFAULT_VOID = true;
+  NODE_EXTENDS = "Main.CubeNode";
+}
+
+PARSER_BEGIN(CubeExecuter)
+package Translator;
+import Main.TCube;
+import java.io.InputStream;
+	public class CubeExecuter
+	{
+	  	private TCube cube;
+		public void Init()		{		  	cube=new TCube();		}
+  		public Node rootNode()
+  		{
+  		  return jjtree.rootNode();
+  		}
+	}
+PARSER_END(CubeExecuter)
+
+SKIP : {" "}
+TOKEN : { < SELECT : "select" > }
+TOKEN : { < ROLL : "roll" > }
+TOKEN : { < RETURN : "return" > }
+TOKEN : { < RANDOM : "random" > }
+TOKEN : { < DO : "do" > }
+TOKEN : { < END : "end" > }
+TOKEN : { < TOP : "top" > }
+TOKEN : { < BOTTOM : "bottom" > }
+TOKEN : { < LEFT : "left" > }
+TOKEN : { < RIGHT : "right" > }
+TOKEN : { < BACK : "back" > }
+TOKEN : { < ROW_T : "row_t" > }
+TOKEN : { < ROW_M : "row_m" > }
+TOKEN : { < ROW_B : "row_b" > }
+TOKEN : { < COL_L : "col_l" > }
+TOKEN : { < COL_M : "col_m" > }
+TOKEN : { < COL_R : "col_r" > }
+TOKEN : { < EOL : "\n" | "\r" | "\r\n" > }
+TOKEN :	{ < OPENPAR : "(" > }
+TOKEN : { < CLOSEPAR : ")" > }
+TOKEN : { < COMA : "," > }
+TOKEN : {
+  < NUMBER : <DIGIT>
+  	| <DIGIT> "." <DIGIT>
+  	|  <DIGIT> "."
+  	|  "." <DIGIT> >
+}
+TOKEN : { < #DIGIT : (["0"-"9"])+ > }
+TOKEN : { < ID : (["a"-"z","A"-"Z"])+ > } 
+void start()
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #Start : {}
+{
+  (    checkLine()
+  )+
+  <EOL>
+}
+void checkLine()
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #checkLine : {}
+{
+    (
+  	  checkSelect()
+ 	  |
+ 	  checkRoll()
+ 	  |  
+  	  checkRandom()
+ 	  |
+ 	  checkReturn()
+ 	  |
+ 	  checkCycle() 
+	)
+}
+void checkSelect() 
+		throws 	TokenMgrError,
+				ParseException #checkSelect :
+{
+  int side = 0;
+}
+{
+  <SELECT>
+  <OPENPAR>
+  (
+  	<TOP>
+  	|
+  	<BOTTOM>
+  	{ side = 1; }
+  	| 
+  	<LEFT>
+  	{ side = 2; }
+  	|
+  	<RIGHT>
+  	{ side = 3; }
+  	|
+  	<BACK>
+  	{ side = 4; }
+  ) 
+  <CLOSEPAR>
+  { jjtThis.setSide(side); }
+}
+void checkRoll() 
+		throws 	TokenMgrError,
+				ParseException #checkRoll :
+{
+  int stick = 0, dir = 0;
+}
+{
+  <ROLL>
+  <OPENPAR>
+  (
+    <ROW_T>
+  	|
+    <ROW_M>
+    { stick = 1; }
+  	| 
+    <ROW_B>
+    { stick = 2; }
+  	|
+    <COL_L>
+    { stick = 3; }
+  	|
+    <COL_M>
+    { stick = 4; }
+  	|
+    <COL_R>
+    { stick = 5; }
+  )
+  <COMA>
+  (
+  	<TOP>
+  	|
+  	<BOTTOM>
+    { dir = 1; }
+  	| 
+  	<LEFT>
+    { dir = 2; }
+  	|
+  	<RIGHT>
+    { dir = 3; }
+  	|
+  	<BACK>
+    { dir = 4; }
+  )
+  <CLOSEPAR>
+  {	jjtThis.setStick(stick);
+	jjtThis.setDir(dir);
+  }
+}
+void checkRandom() 
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #checkRandom :
+{
+  Token t;
+}
+{
+  <RANDOM>
+  <OPENPAR>
+  t = <NUMBER>
+  <CLOSEPAR>
+  { jjtThis.setNumb1(Integer.parseInt(t.image)); }
+}
+void checkReturn() 
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #checkReturn :
+{
+  Token t;
+}
+{
+  <RETURN>
+  <OPENPAR>
+  t = <NUMBER>
+  <CLOSEPAR>
+  { jjtThis.setNumb2(Integer.parseInt(t.image)); }
+}
+void Iteration()
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #checkIteration : {}
+{
+  (  	checkLine()
+  )+
+  <END> 
+}
+void checkCycle()
+		throws 	NumberFormatException,
+				TokenMgrError,
+				ParseException #checkCycle :
+{
+  int count;
+  Token t;	
+}
+{
+  <DO>
+  t = <NUMBER>
+  Iteration()
+  { jjtThis.setCount(Integer.parseInt(t.image)); }
+}

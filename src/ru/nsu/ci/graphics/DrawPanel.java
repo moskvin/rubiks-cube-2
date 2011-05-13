@@ -28,83 +28,160 @@ import com.jogamp.opengl.util.Animator;
  */
 public class DrawPanel extends JPanel implements GLEventListener, KeyListener {
 	float rotateT = 0.0f;
-
 	static GLU glu = new GLU();
 
 	static GLCanvas canvas = new GLCanvas();
 
 	static Animator animator = new Animator(canvas);
-
+	
+	class Clr {
+		
+		public Clr(float r, float g, float b) {
+			super();
+			this.r = r;
+			this.g = g;
+			this.b = b;
+		}
+		float r;
+		float g;
+		float b;
+	}
+		
+	Clr[][][][] kube = new Clr[3][3][3][6];
+	
+	Clr white = new Clr(1.0f,1.0f,1.0f);
+	Clr red = new Clr(1.0f,0.0f,0.0f);
+	Clr green = new Clr(0.0f,0.7f,0.0f);
+	Clr blue = new Clr(0.0f,0.0f,1.0f);
+	Clr yellow = new Clr(1.0f,1.0f,0.0f);
+	Clr orange = new Clr(1.0f,0.5f,0.0f);
+	
+	
 	public void display(GLAutoDrawable gLDrawable) {
 		final GL2 gl = gLDrawable.getGL().getGL2();
 		gl.glClear(GL.GL_COLOR_BUFFER_BIT);
 		gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
 		gl.glLoadIdentity();
 		gl.glTranslatef(0.0f, 0.0f, -5.0f);
-				
-		class Kube
-		{
-			int[] left = new int[27]; //0x000000;
-			int right[];
-			int down[];
-			int up[];
-			int front[];
-			int back[];
-		}
+		
+		
+		
+		//for(int i=0;i>3;i++)
+		//	kube[i][0][0]=[red,yellow,green,blue,white];
+		
 		
 		// rotate on the three axis
-		gl.glRotatef(rotateT, 1.0f, 0.0f, 0.0f);
+		//gl.glRotatef(rotateT, 1.0f, 0.0f, 0.0f);
 		gl.glRotatef(rotateT, 0.0f, 1.0f, 0.0f);
-		gl.glRotatef(rotateT, 0.0f, 0.0f, 1.0f);
+		//gl.glRotatef(rotateT, 0.0f, 0.0f, 1.0f);
 		// Draw A Quad
-		gl.glBegin(GL2.GL_QUADS);
-		for(int i=-1;i<=1;i++)
-			for(int j=-1;j<=1;j++)
-				for(int k=-1;k<=1;k++)
+		
+		for(int i=0;i<=2;i++)
+			for(int j=0;j<=2;j++)
+				for(int k=0;k<=2;k++)
 				{
-					//gl.glColor(Kube.front[n]); // set the color of the quad
-					gl.glColor3f(1.0f, 0.0f, 0.0f);
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					kube[i][j][k][0]=green;
+					kube[i][j][k][1]=white;
+					kube[i][j][k][2]=orange;
+					kube[i][j][k][3]=yellow;
+					kube[i][j][k][4]=blue;
+					kube[i][j][k][5]=red;
+				}
+		Clr[] tmp=new Clr[3];
+		tmp[0]=kube[0][2][2][0];
+		tmp[1]=kube[1][2][2][0];
+		tmp[2]=kube[2][2][2][0];
+		
+		kube[0][2][2][0]=kube[2][2][2][1];
+		kube[1][2][2][0]=kube[2][2][1][1];
+		kube[2][2][2][0]=kube[2][2][0][1];
+		
+		kube[2][2][2][1]=kube[2][2][0][5];
+		kube[2][2][1][1]=kube[1][2][0][5];
+		kube[2][2][0][1]=kube[0][2][0][5];
+		
+		kube[2][2][0][5]=kube[0][2][0][4];
+		kube[1][2][0][5]=kube[0][2][1][4];
+		kube[0][2][0][5]=kube[0][2][2][4];
+		
+		kube[0][2][0][4]=tmp[0];
+		kube[0][2][1][4]=tmp[1];
+		kube[0][2][2][4]=tmp[2];
+		
+		Clr[] tmp1=new Clr[3];
+		tmp1[0]=kube[2][1][2][0];
+		tmp1[1]=kube[2][1][1][0];
+		tmp1[2]=kube[2][1][0][0];
+		
+		kube[0][1][2][0]=kube[0][1][0][4];
+		kube[1][1][2][0]=kube[0][1][1][4];
+		kube[2][1][2][0]=kube[0][1][2][4];
+		
+		kube[0][1][0][1]=kube[2][1][0][5];
+		kube[0][1][1][1]=kube[1][1][0][5];
+		kube[0][1][2][1]=kube[0][1][0][5];
+		
+		kube[2][1][0][5]=kube[2][1][2][4];
+		kube[1][1][0][5]=kube[2][1][1][4];
+		kube[0][1][0][5]=kube[2][1][0][4];
+		
+		kube[2][1][2][4]=tmp1[0];
+		kube[2][1][1][4]=tmp1[1];
+		kube[2][1][0][4]=tmp1[2];
+		
+		gl.glBegin(GL2.GL_QUADS);
+		for(int i=0;i<=2;i++)
+			for(int j=0;j<=2;j++)
+				for(int k=0;k<=2;k++)
+				{
 					
-					//gl.glColor3f(r[n], g[n], b[n]);
-					gl.glColor3f(0.0f, 0.5f, 0.0f);
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Left
+					//0
+					gl.glColor3f(kube[i][j][k][0].r,kube[i][j][k][0].g,kube[i][j][k][0].b);          
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Left
 					
-					gl.glColor3f(0.0f,0.0f,1.0f);
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+                    //1
+					gl.glColor3f(kube[i][j][k][1].r,kube[i][j][k][1].g,kube[i][j][k][1].b); 
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Left
 					
-					gl.glColor3f(1.0f,1.0f,1.0f);
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					//2
+					gl.glColor3f(kube[i][j][k][2].r,kube[i][j][k][2].g,kube[i][j][k][2].b); 
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Left
+						
+					//3
+					gl.glColor3f(kube[i][j][k][3].r,kube[i][j][k][3].g,kube[i][j][k][3].b); 
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Left
 					
-					gl.glColor3f(1.0f,1.0f,0.0f);
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(-0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(0.3f+i*0.65f, -0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					//4
+					gl.glColor3f(kube[i][j][k][4].r,kube[i][j][k][4].g,kube[i][j][k][4].b); 
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, 0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Left
 					
-					gl.glColor3f(1.0f,0.5f,0.0f);
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Top Left
-					gl.glVertex3f(-0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Top Right
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, 0.3f+k*0.65f); // Bottom Right
-					gl.glVertex3f(0.3f+i*0.65f, 0.3f+j*0.65f, -0.3f+k*0.65f); // Bottom Left
+					//5
+					gl.glColor3f(kube[i][j][k][5].r,kube[i][j][k][5].g,kube[i][j][k][5].b); 
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Left
+					gl.glVertex3f(0.3f+(i-1)*0.65f, 0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Top Right
+					gl.glVertex3f(0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Right
+					gl.glVertex3f(-0.3f+(i-1)*0.65f, -0.3f+(j-1)*0.65f, -0.3f+(k-1)*0.65f); // Bottom Left
 				}
 		// Done Drawing The Quad
 		gl.glEnd();
 
 		// increasing rotation for the next iteration
-		rotateT += 0.05f;
+		rotateT += 0.3f;
 	}
 
 	public void displayChanged(GLAutoDrawable gLDrawable, boolean modeChanged,
